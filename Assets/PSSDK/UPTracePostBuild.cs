@@ -22,7 +22,7 @@ if (target2 == BuildTarget.iPhone)
 			AASUnityEditor.XCodeEditor.XCProject proj = new AASUnityEditor.XCodeEditor.XCProject(path);
 
 			string[] projmods = System.IO.Directory.GetFiles(
-System.IO.Path.Combine(System.IO.Path.Combine(Application.dataPath, "AASDK"), "Plugins"), "AASDK.projmods", System.IO.SearchOption.AllDirectories);
+System.IO.Path.Combine(System.IO.Path.Combine(Application.dataPath, "PSSDK"), "Plugins"), "SDK.projmods", System.IO.SearchOption.AllDirectories);
 			if(projmods.Length == 0)
 			{
 				Debug.LogWarning("[PolyPostBuild]PolyADSDK.projmods not found!");

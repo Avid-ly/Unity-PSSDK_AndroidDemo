@@ -37,7 +37,9 @@ namespace PSSDK
 #elif UNITY_ANDROID && !UNITY_EDITOR
 			private static AndroidJavaClass jc = null;
 			private readonly static string JavaClassName = "com.ps.sdk.unity.PSSDKProxy";
+			private readonly static string JavaClassStaticMethod_init = "init";
 			private readonly static string JavaClassStaticMethod_requestPrivacyData = "requestPrivacyData";
+			private readonly static string JavaClassStaticMethod_loadPrivacyDialog = "loadPrivacyDialog";
 			private readonly static string JavaClassStaticMethod_showPrivacyDialog = "showPrivacyDialog";
 			private readonly static string JavaClassStaticMethod_updateAccessPrivacyInfoStatus = "updateAccessPrivacyInfoStatus";
 
@@ -58,8 +60,24 @@ namespace PSSDK
 #endif
         }
 
+        public void init(string productId,string gamerId) {
+           
+			Debug.Log("===> call init in pssdkcall");
+            // 调用原生的方法
+#if UNITY_IOS && !UNITY_EDITOR
+            setLoginCallback();
 
-        public void requestPrivacyData(string productId,string gamerId, Action<string,bool,string,bool> success, Action<string> fail) {
+#elif UNITY_ANDROID && !UNITY_EDITOR
+			if (jc != null) {
+				jc.CallStatic (JavaClassStaticMethod_init,
+								productId,gamerId);
+			}
+#endif
+        }
+
+
+
+        public void requestPrivacyData(Action<string,bool,string,bool> success, Action<string> fail) {
            
 			Debug.Log("===> call requestPrivacyData in pssdkcall");
             // 设置callback回调
@@ -72,14 +90,30 @@ namespace PSSDK
 			if (jc != null) {
 				jc.CallStatic (JavaClassStaticMethod_requestPrivacyData,
 								PSSDKObject.Unity_Callback_Class_Name,
-								PSSDKObject.Unity_Callback_Function_Name,
-								productId,gamerId);
+								PSSDKObject.Unity_Callback_Function_Name);
+			}
+#endif
+        }
+           public void loadPrivacyDialog( Action<string> success, Action<string> fail) {
+           
+			Debug.Log("===> call loadPrivacyDialog in pssdkcall");
+            // 设置callback回调
+            PSSDKObject.getInstance().setLoadPirvacyDialogDataCallBack(success, fail);
+            // 调用原生的方法
+#if UNITY_IOS && !UNITY_EDITOR
+            setLoginCallback();
+
+#elif UNITY_ANDROID && !UNITY_EDITOR
+			if (jc != null) {
+				jc.CallStatic (JavaClassStaticMethod_loadPrivacyDialog,
+								PSSDKObject.Unity_Callback_Class_Name,
+								PSSDKObject.Unity_Callback_Function_Name);
 			}
 #endif
         }
 
 
-        public void showPrivacyDialog(string productId,string privacyName,Action<PSSDKConstant.PrivacyStatusEnum, string> callback) {
+        public void showPrivacyDialog(Action<PSSDKConstant.PrivacyStatusEnum, string> callback) {
             // 设置callback回调
             PSSDKObject.getInstance().setPrivacyInfoStatusCallBack(callback);
             // 调用原生的方法
@@ -90,13 +124,12 @@ namespace PSSDK
 			if (jc != null) {
 				jc.CallStatic (JavaClassStaticMethod_showPrivacyDialog,
 								PSSDKObject.Unity_Callback_Class_Name,
-								PSSDKObject.Unity_Callback_Function_Name,
-								productId,privacyName);
+								PSSDKObject.Unity_Callback_Function_Name);
 			}
 #endif
         }
 
-        public void updateAccessPrivacyInfoStatus(string productId, string gamerId, bool privacyStatus, string privacyName,Action<string> success,Action<string> fail)
+        public void updateAccessPrivacyInfoStatus(string privacyName,bool privacyStatus, Action<string> success,Action<string> fail)
         {
             Debug.Log("===> updateAccessPrivacyInfoStatus in PSSDKCall.");
             PSSDKObject.getInstance().setUpdatePrivacyInfoStatusCallBack(success,fail);
@@ -109,7 +142,7 @@ namespace PSSDK
 				jc.CallStatic(JavaClassStaticMethod_updateAccessPrivacyInfoStatus,
 								PSSDKObject.Unity_Callback_Class_Name,
 								PSSDKObject.Unity_Callback_Function_Name,
-								productId,gamerId,privacyStatus? "true":"false",privacyName);
+								privacyName,privacyStatus? "true":"false");
 			}
 #endif
         }

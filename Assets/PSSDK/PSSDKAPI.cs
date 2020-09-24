@@ -16,22 +16,51 @@ namespace PSSDK
 				sdkCall = new PSSDKCall (); 
 			}
 		}
-
-		public static void requestPrivacyData (string productId,string gamerId,Action<string,bool,string,bool> success, Action<string> fail) {
+		
+		public static void init (string productId,string gamerId) {
 			 	Debug.Log("===> call requestPrivacyData in pssdkapi");
 				instanceOfCall ();
-				sdkCall.requestPrivacyData (productId, gamerId, success, fail);
+				if(productId == null || productId == ""){
+					Debug.Log("===> no productid");
+					return;
+				}
+				if(gamerId==null){
+					gamerId="";
+				}
+				sdkCall.init (productId, gamerId);
 			
 		}
 
-		public static void showPrivacyDialog (string productId,string privacyName,Action<PSSDKConstant.PrivacyStatusEnum,string> callBack) {
+		public static void requestPrivacyData (Action<string,bool,string,bool> success, Action<string> fail) {
+			 	Debug.Log("===> call requestPrivacyData in pssdkapi");
 				instanceOfCall ();
-				sdkCall.showPrivacyDialog (productId, privacyName, callBack);
+				sdkCall.requestPrivacyData (success, fail);
 		}
 
-		public static void updateAccessPrivacyInfoStatus (string productId,string gamerId,bool status,string privacyName,Action<string> success, Action<string> fail) {
+
+		public static void loadPrivacyDialog (Action<string> success, Action<string> fail) {
+			 	Debug.Log("===> call loadPrivacyDialog in pssdkapi");
 				instanceOfCall ();
-				sdkCall.updateAccessPrivacyInfoStatus (productId, gamerId, status, privacyName, success, fail);
+				sdkCall.loadPrivacyDialog (success, fail);
+			
+		}
+
+		public static void showPrivacyDialog (Action<PSSDKConstant.PrivacyStatusEnum,string> callBack) {
+				instanceOfCall ();
+				sdkCall.showPrivacyDialog (callBack);
+		}
+
+		public static void updateAccessPrivacyInfoStatus (string privacyName,bool status,Action<string> success, Action<string> fail) {
+				if(privacyName==null || privacyName==""){
+					Debug.Log("===> no privacyName");
+					return;
+				}
+				if(status==null){
+					Debug.Log("===> no status");
+					return;
+				}
+				instanceOfCall ();
+				sdkCall.updateAccessPrivacyInfoStatus (privacyName, status,success, fail);
 		}
 
         

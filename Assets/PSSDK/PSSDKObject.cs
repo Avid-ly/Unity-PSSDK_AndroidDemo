@@ -18,6 +18,12 @@ namespace PSSDK {
         private readonly static string Unity_Callback_Message_Function_PSSDK_REQUESTPRIVACY_DATA_Success = "PSSDK_REQUESTPRIVACY_DATA_Success";
         private readonly static string Unity_Callback_Message_Function_PSSDK_REQUESTPRIVACY_DATA_Fail    = "PSSDK_REQUESTPRIVACY_DATA_Fail";
 		
+
+    	// loaddialogDialogData回调
+   		private readonly static string Unity_Callback_Message_Function_PSSDKLOADDIALOG_DATA_Success = "PSSDK_PSSDKLOADDIALOG_DATA_Success";
+   		private readonly static string Unity_Callback_Message_Function_PSSDKLOADDIALOG_DATA_Fail = "PSSDK_PSSDKLOADDIALOG_DATA_Fail";
+
+
 		// 授权结果
 		private readonly static string Unity_Callback_Message_Function_PSSDK_REQUESTPRIVACYSTATUS_CallBack = "PSSDK_REQUESTPRIVACYSTATUS_CallBack";
 
@@ -49,6 +55,9 @@ namespace PSSDK {
 		Action<string,bool,string,bool> requestPrivacyDataSucceedCallback;
 		Action<string> requestPrivacyDataFailCallback;
 
+		Action<string> loadDialogDataSuccessCallback;
+		Action<string> loadDialogDataFailCallback;
+
 		Action<PSSDKConstant.PrivacyStatusEnum,string> privacyInfoStatusCallBack;
 
 		Action<string> updatePrivacyStatusSucceedCallback;
@@ -69,6 +78,10 @@ namespace PSSDK {
 		public void setRequestPrivacyDataSucceedCallback(Action<string,bool,string,bool> success, Action<string> fail) {
 			requestPrivacyDataSucceedCallback = success;
 			requestPrivacyDataFailCallback = fail;
+		}
+		public void setLoadPirvacyDialogDataCallBack(Action<string> success, Action<string> fail) {
+			loadDialogDataSuccessCallback = success;
+			loadDialogDataFailCallback = fail;
 		}
 		
 		public void setPrivacyInfoStatusCallBack(Action<PSSDKConstant.PrivacyStatusEnum,string> callBack) {
@@ -128,6 +141,24 @@ namespace PSSDK {
 					}
 					else {
 						Debug.Log ("===> can't run requestPrivacyDataFailCallback(), no delegate object.");
+					}
+				}
+				else if (function.Equals (Unity_Callback_Message_Function_PSSDKLOADDIALOG_DATA_Success)) {
+                    string result = getInnerJsonParamterValue(jsonObj, "msg0");
+                    if (loadDialogDataSuccessCallback != null) {
+						loadDialogDataSuccessCallback (result);
+					}
+					else {
+						Debug.Log ("===> can't run loadDialogDataSuccessCallback(), no delegate object.");
+					}
+				}
+				else if (function.Equals (Unity_Callback_Message_Function_PSSDKLOADDIALOG_DATA_Fail)) {
+                    string reason = getInnerJsonParamterValue(jsonObj, "msg0");
+                    if (loadDialogDataFailCallback != null) {
+						loadDialogDataFailCallback (reason);
+					}
+					else {
+						Debug.Log ("===> can't run loadDialogDataFailCallback(), no delegate object.");
 					}
 				}
 				else if (function.Equals (Unity_Callback_Message_Function_PSSDK_REQUESTPRIVACYSTATUS_CallBack)) {

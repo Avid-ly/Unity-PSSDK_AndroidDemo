@@ -21,7 +21,7 @@ public class TestPSSDKCall : MonoBehaviour
 
 	}
 
-	public void onRequestPrivacyDataClick() {
+    public void onInitClick() {
 
 
         string productId = PRODUCTID;
@@ -33,75 +33,91 @@ public class TestPSSDKCall : MonoBehaviour
 
 #endif
         
-        Text text = GameObject.Find("CallText").GetComponent<Text>();
-        text.text = "call onRequestPrivacyDataClick";
+        PSSDKApi.init(productId,GAMERID);
+        showLogMsg("onInitClick press  ");
 
-		PSSDKApi.requestPrivacyData (productId,GAMERID,
-            new System.Action<string,bool,string,bool> (onRequestPrivacyDataSuccess),
-            new System.Action<string>(onRequestPrivacyDataFail));
-        Debug.Log("===> call onRequestPrivacyDataClick");
+    }
+
+	public void onRequestPrivacyDataClick() {
+
+		PSSDKApi.requestPrivacyData (new System.Action<string,bool,string,bool> (onRequestPrivacyDataSuccess),
+                                     new System.Action<string>(onRequestPrivacyDataFail));
+        showLogMsg("onRequestPrivacyDataClick press  ");
+
     }
 
 
-    public void onShowPrivacyDialogClick() {
-        Text text = GameObject.Find("CallText").GetComponent<Text>();
-        text.text = "call onShowPrivacyDialogClick";
-        Debug.Log("===> onShowPrivacyDialogClick pressed ");
-        PSSDKApi.showPrivacyDialog(PRODUCTID,"gdpr",
-            new System.Action<PSSDKConstant.PrivacyStatusEnum,string>(onShowPrivacyDialogCallBack)
+   public void onLoadPrivacyDialogClick() {
+        PSSDKApi.loadPrivacyDialog(new System.Action<string>(onLoadPrivacyDataSuccess),
+            new System.Action<string>(onLoadPrivacyDataFail)
         );
-        Debug.Log("===> call onShowPrivacyDialogClick");
+
+        showLogMsg("onLoadPrivacyDialogClick press  ");
+    }
+
+    public void onShowPrivacyDialogClick() {
+        PSSDKApi.showPrivacyDialog(new System.Action<PSSDKConstant.PrivacyStatusEnum,string>(onShowPrivacyDialogCallBack)
+        );
+        showLogMsg("onShowPrivacyDialogClick press  ");
     }
 
      public void onUpdatePrivactAccessStatusClick() {
 
-        Text text = GameObject.Find("CallText").GetComponent<Text>();
-        text.text = "call onUpdatePrivactAccessStatusClick";
 
-        Debug.Log("===> onUpdatePrivactAccessStatusClick pressed ");
-        PSSDKApi.updateAccessPrivacyInfoStatus(PRODUCTID,GAMERID,true,"gdpr",
+        PSSDKApi.updateAccessPrivacyInfoStatus("gdpr",true,
             new System.Action<string>(onUpdatePrivacyDataSuccess),
             new System.Action<string>(onUpdatePrivacyDataFail)
         );
-        Debug.Log("===> call onUpdatePrivactAccessStatusClick");
+
+        showLogMsg("onUpdatePrivactAccessStatusClick press  ");
+
+        
     }
 
 
     private void onRequestPrivacyDataSuccess(string privacy, bool ignore, string type, bool accepted)
     {
-        Text text = GameObject.Find("CallText").GetComponent<Text>();
-        text.text = "privacy: "+privacy+" ignore:"+ignore+" type : "+type+" accepted : "+accepted;
-        Debug.Log ("===> onRequestPrivacyDataSuccess Callback at: " + privacy);
+    
+        showLogMsg("onRequestPrivacyDataSuccess  "+"privacy: "+privacy+" ignore:"+ignore+" type : "+type+" accepted : "+accepted);
     }
 
      private void onRequestPrivacyDataFail(string reason)
     {
-        Text text = GameObject.Find("CallText").GetComponent<Text>();
-        text.text = "fail reason: "+reason;
-        Debug.Log ("===> onRequestPrivacyDataFail reason : " + reason);
+        showLogMsg("onRequestPrivacyDataFail  "+"reason: "+reason);
+    }
+
+    private void onLoadPrivacyDataSuccess(string result)
+    {
+        showLogMsg("onLoadPrivacyDataSuccess  "+"result: "+result);
+    }
+
+     private void onLoadPrivacyDataFail(string reason)
+    {
+        showLogMsg("onLoadPrivacyDataFail  "+"reason: "+reason);
     }
 
     private void onShowPrivacyDialogCallBack(PSSDKConstant.PrivacyStatusEnum result, string reason)
     {
-        Text text = GameObject.Find("CallText").GetComponent<Text>();
-        text.text = "result: "+result+" reason:"+reason;
-        Debug.Log ("===> onShowPrivacyDialogCallBack Callback at: " + result);
+        showLogMsg("onShowPrivacyDialogCallBack  "+"result: "+result+" reason:"+reason);
     }
 
     private void onUpdatePrivacyDataSuccess(string result)
     {
-        Text text = GameObject.Find("CallText").GetComponent<Text>();
-        text.text = "result: "+result;
-        Debug.Log ("===> onRequestPrivacyDataSuccess Callback at: " + result);
+
+        showLogMsg("onRequestPrivacyDataSuccess result "+result);
     }
 
      private void onUpdatePrivacyDataFail(string reason)
     {
-        Text text = GameObject.Find("CallText").GetComponent<Text>();
-        text.text = "fail reason: "+reason;
-        Debug.Log ("===> onUpdatePrivacyDataFail reason : " + reason);
+        showLogMsg("onUpdatePrivacyDataFail reason "+reason);
     }
 
+
+    private void showLogMsg(string msg){
+        Text text = GameObject.Find("CallText").GetComponent<Text>();
+        text.text = msg;
+        Debug.Log ("===> msg " + msg);
+    }
 
 }
 
