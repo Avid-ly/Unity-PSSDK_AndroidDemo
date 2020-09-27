@@ -16,22 +16,22 @@ namespace PSSDK
 			private static extern void setIosCallbackWithClassAndFunction(string callbackClassName, string callbackFunctionName);
 
 			[DllImport("__Internal")]
-			private static extern void initIosSDK(string productId);
+			private static extern void initIosSDK(string productId, string accountId);
 
 			[DllImport("__Internal")]
-			private static extern void setLoginCallback();
+			private static extern void getUserRegion();
 
 			[DllImport("__Internal")]
-			private static extern void login();
+			private static extern void getAuthorization();
 
 			[DllImport("__Internal")]
-			private static extern void showUserCenter();
+			private static extern void updateAuthorization(bool authorization, string privacyPolicy);
 
 			[DllImport("__Internal")]
-			private static extern string getIosFacebookLoginedToken();
+			private static extern void getPrivacyPolicyAlertInfo();
 
 			[DllImport("__Internal")]
-			private static extern string getGGID();
+			private static extern void showPrivacyPolicyAlert();
 
 			
 #elif UNITY_ANDROID && !UNITY_EDITOR
@@ -51,6 +51,7 @@ namespace PSSDK
         public PSSDKCall() {
             PSSDKObject.getInstance();
 #if UNITY_IOS && !UNITY_EDITOR
+            setIosCallbackWithClassAndFunction(PSSDKObject.Unity_Callback_Class_Name, PSSDKObject.Unity_Callback_Function_Name);
 				Debug.Log ("===> PSSDKCall instanced.");
 #elif UNITY_ANDROID && !UNITY_EDITOR
 			if (jc == null) {
@@ -65,7 +66,7 @@ namespace PSSDK
 			Debug.Log("===> call init in pssdkcall");
             // 调用原生的方法
 #if UNITY_IOS && !UNITY_EDITOR
-            setLoginCallback();
+            initIosSDK(productId,gamerId);
 
 #elif UNITY_ANDROID && !UNITY_EDITOR
 			if (jc != null) {
@@ -84,7 +85,7 @@ namespace PSSDK
             PSSDKObject.getInstance().setRequestPrivacyDataSucceedCallback(success, fail);
             // 调用原生的方法
 #if UNITY_IOS && !UNITY_EDITOR
-            setLoginCallback();
+            getAuthorization();
 
 #elif UNITY_ANDROID && !UNITY_EDITOR
 			if (jc != null) {
@@ -101,7 +102,7 @@ namespace PSSDK
             PSSDKObject.getInstance().setLoadPirvacyDialogDataCallBack(success, fail);
             // 调用原生的方法
 #if UNITY_IOS && !UNITY_EDITOR
-            setLoginCallback();
+            getPrivacyPolicyAlertInfo();
 
 #elif UNITY_ANDROID && !UNITY_EDITOR
 			if (jc != null) {
@@ -118,7 +119,7 @@ namespace PSSDK
             PSSDKObject.getInstance().setPrivacyInfoStatusCallBack(callback);
             // 调用原生的方法
 #if UNITY_IOS && !UNITY_EDITOR
-			setLoginCallback();
+			showPrivacyPolicyAlert();
 
 #elif UNITY_ANDROID && !UNITY_EDITOR
 			if (jc != null) {
@@ -134,7 +135,7 @@ namespace PSSDK
             Debug.Log("===> updateAccessPrivacyInfoStatus in PSSDKCall.");
             PSSDKObject.getInstance().setUpdatePrivacyInfoStatusCallBack(success,fail);
 #if UNITY_IOS && !UNITY_EDITOR
-			
+			updateAuthorization(privacyStatus, privacyName);
 
 #elif UNITY_ANDROID && !UNITY_EDITOR
 			if (jc != null) 

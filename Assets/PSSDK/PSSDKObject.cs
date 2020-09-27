@@ -34,12 +34,22 @@ namespace PSSDK {
 
         
         // ios
-        private readonly static string Unity_Callback_Message_Function_Login_Succeed_Complete   = "Init_Succeed_Complete";
-        private readonly static string Unity_Callback_Message_Function_Login_Error_Complete     = "Init_Error_Complete";
+        private readonly static string Unity_Callback_Message_Function_GetUserRegion_Complete  		= "GetUserRegion_Complete";           	// 获取用户归属
+		private readonly static string Unity_Callback_Message_Function_GetAuthorization_Complete  		= "Authorization_Complete";         		// 获取用户权限
+		private readonly static string Unity_Callback_Message_Function_UpdateAuthorization_Complete  	= "UpdateAuthorization_Complete";   		// 更新用户权限
+		private readonly static string Unity_Callback_Message_Function_GetAlertInfo_Complete  			= "GetAlertInfo_Complete";           	// 获取弹窗信息
+		private readonly static string Unity_Callback_Message_Function_ShowAlert_Complete  			= "ShowAlert_Complete";             		// 使用弹窗请求用户权限
         
-        private readonly static string Unity_Callback_Message_Parameter_GameGuestId     = "gameGuestId";
-        private readonly static string Unity_Callback_Message_Parameter_SignedRequest   = "signedRequest";
-        private readonly static string Unity_Callback_Message_Parameter_LoginMode       = "loginMode";
+        private readonly static string Unity_Callback_Message_Parameter_country   = "country";
+		private readonly static string Unity_Callback_Message_Parameter_province  = "province";
+		private readonly static string Unity_Callback_Message_Parameter_city      = "city";
+		
+		private readonly static string Unity_Callback_Message_Parameter_privacyPolicy      = "privacyPolicy";
+		private readonly static string Unity_Callback_Message_Parameter_authorization      = "authorization";
+		private readonly static string Unity_Callback_Message_Parameter_ignore             = "ignore";
+		private readonly static string Unity_Callback_Message_Parameter_type               = "type";
+		private readonly static string Unity_Callback_Message_Parameter_succeed            = "succeed";
+
 
 		public static PSSDKObject getInstance()
 		{
@@ -101,6 +111,32 @@ namespace PSSDK {
                 Hashtable innerJsonObj = (Hashtable)jsonObj[Unity_Callback_Message_Key_Parameter];
                 if (innerJsonObj.ContainsKey(key)) { 
                     msg = (string)innerJsonObj[key];
+                }
+            }
+            return msg;
+        }
+
+        // 将jsonobj转换了map<>
+        public bool getInnerJsonParamterBoolValue(Hashtable jsonObj,string key) {
+            bool msg = false;
+            if (jsonObj.ContainsKey(Unity_Callback_Message_Key_Parameter))
+            {
+                Hashtable innerJsonObj = (Hashtable)jsonObj[Unity_Callback_Message_Key_Parameter];
+                if (innerJsonObj.ContainsKey(key)) { 
+                    msg = (bool)innerJsonObj[key];
+                }
+            }
+            return msg;
+        }
+
+        // 将jsonobj转换了map<>
+        public int getInnerJsonParamterIntValue(Hashtable jsonObj,string key) {
+            int msg = 0;
+            if (jsonObj.ContainsKey(Unity_Callback_Message_Key_Parameter))
+            {
+                Hashtable innerJsonObj = (Hashtable)jsonObj[Unity_Callback_Message_Key_Parameter];
+                if (innerJsonObj.ContainsKey(key)) { 
+                    msg = (int)innerJsonObj[key];
                 }
             }
             return msg;
@@ -196,8 +232,140 @@ namespace PSSDK {
 					else {
 						Debug.Log ("===> can't run updatePrivacyStatusFailCallback(), no delegate object.");
 					}
-				}				
-			
+				}
+
+				// iOS
+				// 获取授权状态
+				else if (function.Equals (Unity_Callback_Message_Function_GetAuthorization_Complete)) {
+
+					Debug.Log("===> call function " + Unity_Callback_Message_Function_GetAuthorization_Complete);
+					
+					if (jsonObj.ContainsKey(Unity_Callback_Message_Key_Parameter)) {
+						string json = (string)jsonObj[Unity_Callback_Message_Key_Parameter];
+						Debug.Log("parameter json : " + json);
+
+						Hashtable paraObj = (Hashtable)TraceXXJSON.MiniJSON.jsonDecode (json);
+
+						privacyName = (string)paraObj[Unity_Callback_Message_Parameter_privacyPolicy];
+						Debug.Log ("===> privacyName " + privacyName);
+                    	ignore = (bool)paraObj[Unity_Callback_Message_Parameter_ignore];
+                    	Debug.Log ("===> ignore " + ignore);
+                    	type = Convert.ToString((int)paraObj[Unity_Callback_Message_Parameter_type]);
+                    	Debug.Log ("===> type " + type);
+                    	status = (bool)paraObj[Unity_Callback_Message_Parameter_authorization];
+                    	Debug.Log ("===> status " + status);
+                    	if (requestPrivacyDataSucceedCallback != null) {
+							requestPrivacyDataSucceedCallback (privacyName, ignore, type, status);
+						}
+						else {
+							Debug.Log ("===> can't run requestPrivacyDataSucceedCallback(), no delegate object.");
+						}
+            		}
+            		else {
+            			Debug.Log("===> Does not contain Parameter");
+            		}
+				}
+				// 主动更新授权状态 
+				else if (function.Equals (Unity_Callback_Message_Function_UpdateAuthorization_Complete)) {
+
+					Debug.Log("===> call function " + Unity_Callback_Message_Function_UpdateAuthorization_Complete);
+
+					if (jsonObj.ContainsKey(Unity_Callback_Message_Key_Parameter)) {
+						string json = (string)jsonObj[Unity_Callback_Message_Key_Parameter];
+						Debug.Log("parameter json : " + json);
+
+						Hashtable paraObj = (Hashtable)TraceXXJSON.MiniJSON.jsonDecode (json);
+
+                    	bool succeed = (bool)paraObj[Unity_Callback_Message_Parameter_succeed];
+                    	Debug.Log ("===> succeed " + succeed);
+                    	
+                    	if (succeed) {
+							if (updatePrivacyStatusSucceedCallback != null) {
+								updatePrivacyStatusSucceedCallback(succeed?"success":"fail");
+							}
+							else {
+								Debug.Log ("===> can't run updatePrivacyStatusSucceedCallback(), no delegate object.");
+							}
+						}
+						else {
+							if (updatePrivacyStatusFailCallback != null) {
+								updatePrivacyStatusFailCallback("fail");
+							}
+							else {
+								Debug.Log ("===> can't run updatePrivacyStatusFailCallback(), no delegate object.");
+							}
+						}
+            		}
+            		else {
+            			Debug.Log("===> Does not contain Parameter");
+            		}
+				}
+				// 获取弹窗信息
+				else if (function.Equals (Unity_Callback_Message_Function_GetAlertInfo_Complete)) {
+
+					Debug.Log("===> call function " + Unity_Callback_Message_Function_GetAlertInfo_Complete);
+
+					if (jsonObj.ContainsKey(Unity_Callback_Message_Key_Parameter)) {
+						string json = (string)jsonObj[Unity_Callback_Message_Key_Parameter];
+						Debug.Log("parameter json : " + json);
+
+						Hashtable paraObj = (Hashtable)TraceXXJSON.MiniJSON.jsonDecode (json);
+
+                    	bool succeed = (bool)paraObj[Unity_Callback_Message_Parameter_succeed];
+                    	Debug.Log ("===> succeed " + succeed);
+                    	
+	                    if (succeed) {
+	                    	if (loadDialogDataSuccessCallback != null) {
+								loadDialogDataSuccessCallback ("success");
+							}
+							else {
+								Debug.Log ("===> can't run loadDialogDataSuccessCallback(), no delegate object.");
+							}
+	                    }
+	                    else {
+	                    	if (loadDialogDataFailCallback != null) {
+								loadDialogDataFailCallback ("fail");
+							}
+							else {
+								Debug.Log ("===> can't run loadDialogDataFailCallback(), no delegate object.");
+							}
+	                    }
+            		}
+            		else {
+            			Debug.Log("===> Does not contain Parameter");
+            		}
+				}
+				// 使用弹窗向用户请求授权
+				else if (function.Equals (Unity_Callback_Message_Function_ShowAlert_Complete)) {
+
+					Debug.Log("===> call function " + Unity_Callback_Message_Function_ShowAlert_Complete);
+
+					if (jsonObj.ContainsKey(Unity_Callback_Message_Key_Parameter)) {
+						string json = (string)jsonObj[Unity_Callback_Message_Key_Parameter];
+						Debug.Log("parameter json : " + json);
+
+						Hashtable paraObj = (Hashtable)TraceXXJSON.MiniJSON.jsonDecode (json);
+
+                    	bool authorization = (bool)paraObj[Unity_Callback_Message_Parameter_authorization];
+                    	Debug.Log ("===> authorization " + authorization);
+                    	
+	                    if (privacyInfoStatusCallBack != null) {
+	                    	if(authorization){
+	                    		privacyInfoStatusCallBack (PSSDKConstant.PrivacyStatusEnum.PrivacyInfoStatusAccepted,"");
+	                    	}
+	                    	else {
+	                    		privacyInfoStatusCallBack (PSSDKConstant.PrivacyStatusEnum.PrivacyInfoStatusDenied,"");
+	                    	}
+						}
+						else {
+							Debug.Log ("===> can't run privacyInfoStatusCallBack(), no delegate object.");
+						}
+            		}
+            		else {
+            			Debug.Log("===> Does not contain Parameter");
+            		}
+				}
+
 				//unkown call
 				else {
 					Debug.Log ("===> onTargetCallback unkown function:" + function);
