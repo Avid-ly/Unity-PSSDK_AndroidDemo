@@ -1,0 +1,22 @@
+{
+  "group": "PSSDK",
+  "libs": [
+    "libsqlite3.tbd",
+    "libxml2.tbd",
+    "libz.tbd",
+    "libc++.tbd"
+  ],
+  "frameworks": [
+    "SafariServices.framework",
+    "WebKit.framework",
+    "iAd.framework"
+  ],
+  "folders": [
+    "../Resources/"
+  ],
+  "excludes": [
+    "^.*.meta$",
+    "^.*.mdown$",
+    "^.*.pdf$"
+  ]
+}
