@@ -18,7 +18,7 @@ public class Demo : MonoBehaviour
     }
     public void onRequestAuthClick()
     {
-        PSSDKApi.requestAuthStatus("600100", "aaa",
+        PSSDKApi.requestAuthStatus("your pid", "your gameid",
             new System.Action<PSSDKAuthModel>(onRequsetAuthSuccess),
             new System.Action<string>(onRequsetAuthFail)
             );
